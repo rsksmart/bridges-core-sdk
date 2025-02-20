@@ -1,0 +1,86 @@
+{
+    "name": "@rsksmart/bridges-core-sdk",
+    "version": "0.4.1",
+    "license": "ISC",
+    "description": "Core module of all the RSK bridges SDKs that contains common functionality",
+    "main": "lib/index.js",
+    "exports": {
+      ".": "./lib/index.js",
+      "./initialization": "./lib/initialization.js"
+    },
+    "types": "lib/index.d.ts",
+    "files": [
+      "./lib/index.js",
+      "./lib/initialization.js",
+      "./lib/index.d.ts",
+      "./lib/initialization.d.ts"
+    ],
+    "typesVersions": {
+      "*": {
+        "initialization": [
+          "./lib/initialization.d.ts"
+        ]
+      }
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/rsksmart/bridges-core-sdk.git"
+    },
+    "keywords": [
+      "TokenBridge",
+      "Flyover",
+      "RskSwap",
+      "SDK",
+      "Node",
+      "Ethereum",
+      "Rootstock",
+      "Bitcoin",
+      "TypeScript",
+      "JavaScript"
+    ],
+    "scripts": {
+      "build": "npx tsc --build ./core.tsconfig.json && npx rollup --bundleConfigAsCjs -c ./rollup.config.js --buildType default",
+      "build:initialization": "npx tsc --outDir lib src/initialization.ts && npx rollup --bundleConfigAsCjs -c ./rollup.config.js --buildType initialization",
+      "test": "jest --verbose",
+      "docs": "npx typedoc --plugin typedoc-plugin-markdown --excludeExternals --githubPages false --out docs ./src && mv docs/README.md docs/Home.md",
+      "test:coverage": "jest --coverage --collectCoverageFrom=\"./src/**\"",
+      "build:clean": "rm -r lib node_modules; npm i && npm run build",
+      "build:initialization:clean": "rm -r lib node_modules; npm i && npm run build:initialization",
+      "lint": "npx eslint --ignore-path .eslintignore --ext .ts --fix .",
+      "lint:validation": "npx eslint --ignore-path .eslintignore --ext .ts .",
+      "prepare": "pip3 install pre-commit && pre-commit install"
+    },
+    "dependencies": {
+      "bech32": "^2.0.0",
+      "bs58check": "^3.0.1",
+      "cross-fetch": "^3.1.5",
+      "ethers": "^5.7.2",
+      "json-bigint": "^1.0.0"
+    },
+    "devDependencies": {
+      "@rollup/plugin-commonjs": "^25.0.3",
+      "@rollup/plugin-json": "^6.0.0",
+      "@rollup/plugin-node-resolve": "^15.1.0",
+      "@typechain/ethers-v5": "^10.2.0",
+      "@types/json-bigint": "^1.0.4",
+      "@types/qrcode": "^1.5.0",
+      "@typescript-eslint/eslint-plugin": "^5.52.0",
+      "@typescript-eslint/parser": "^5.52.0",
+      "eslint": "^8.34.0",
+      "eslint-config-standard-with-typescript": "^34.0.0",
+      "eslint-plugin-import": "^2.27.5",
+      "eslint-plugin-n": "^15.6.1",
+      "eslint-plugin-promise": "^6.1.1",
+      "json-bigint": "^1.0.0",
+      "rollup": "^3.26.3",
+      "rollup-plugin-dts": "^6.1.0",
+      "rollup-plugin-typescript2": "^0.35.0",
+      "swagger-typescript-api": "^13.0.23",
+      "ts-jest": "^29.0.5",
+      "typechain": "^8.1.1",
+      "typedoc": "^0.25.13",
+      "typedoc-plugin-markdown": "^3.15.3",
+      "typescript": "^4.9.5"
+    }
+  }
+  
