@@ -24,6 +24,9 @@
       "noFallthroughCasesInSwitch": true,
       "noUncheckedIndexedAccess": true,
       "noImplicitOverride": true,
-      "skipLibCheck": true
+      "skipLibCheck": true,
+      "paths": {
+        "@rsksmart/bridges-core-sdk/*": ["./lib/index.js"]
+      }
     }
 }
