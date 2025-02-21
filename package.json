@@ -45,8 +45,9 @@
         "docs": "npx typedoc --plugin typedoc-plugin-markdown --excludeExternals --githubPages false --out docs ./src && mv docs/README.md docs/Home.md",
         "test:coverage": "jest --coverage --collectCoverageFrom=\"./src/**\"",
         "build:clean": "rm -r lib node_modules; npm i && npm run build && npm run build:initialization",
-        "lint": "npx eslint --ignore-path .eslintignore --ext .ts --fix .",
-        "lint:validation": "npx eslint --ignore-path .eslintignore --ext .ts .",
+        "lint": "npx eslint --ignore-path .eslintignore --ext .ts --fix . && cd integration-test && npm run lint",
+        "lint:validation": "npx eslint --ignore-path .eslintignore --ext .ts . && cd integration-test && npm run lint:validation",
+        "test:integration": "cd integration-test && npm run test:integration",
         "prepare": "pip3 install pre-commit && pre-commit install"
     },
     "dependencies": {

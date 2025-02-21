@@ -1,0 +1,5 @@
+{
+    "mnemonic": "<mnemonic of the wallet to be used for testing>",
+    "rskRpc": "<rpc url of rsk mainnet or testnet>",
+    "otherNetworkRpc": "<rpc url of sepolia if above one is testnet or ethereum if above one is mainnet, should include the key if needed>"
+}
