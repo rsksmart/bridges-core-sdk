@@ -42,7 +42,7 @@
         "build": "npx tsc --build ./core.tsconfig.json && npx rollup --bundleConfigAsCjs -c ./rollup.config.js --buildType default",
         "build:initialization": "npx tsc --outDir lib src/initialization.ts && npx rollup --bundleConfigAsCjs -c ./rollup.config.js --buildType initialization",
         "test": "jest --verbose",
-        "docs": "npx typedoc --plugin typedoc-plugin-markdown --excludeExternals --githubPages false --out docs ./src && mv docs/README.md docs/Home.md",
+        "docs": "npx typedoc --plugin typedoc-plugin-markdown --excludeExternals --tsconfig core.tsconfig.json --githubPages false --out docs ./src && mv docs/README.md docs/Home.md",
         "test:coverage": "jest --coverage --collectCoverageFrom=\"./src/**\"",
         "build:clean": "rm -r lib node_modules; npm i && npm run build && npm run build:initialization",
         "lint": "npx eslint --ignore-path .eslintignore --ext .ts --fix . && cd integration-test && npm run lint",

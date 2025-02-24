@@ -1,5 +1,5 @@
-{   
-    "exclude": [ "./src/initialization.ts", "./src/config/*" ],
+{
+    "exclude": [ "./src/initialization.ts", "./src/config/*", "integration-test/*" ],
     "compilerOptions": {
         "outDir": "./lib",
         "rootDir": "./src",
