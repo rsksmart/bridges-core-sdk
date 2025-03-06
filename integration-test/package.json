@@ -1,0 +1,17 @@
+{
+    "name": "bridges-core-integration-tests",
+    "version": "1.0.0",
+    "description": "Integration tests for BridgesCoreSDK",
+    "main": "index.js",
+    "scripts": {
+        "test:integration": "rm -rf node_modules && npm i && jest --verbose --testPathPattern=test",
+        "lint": "npx eslint --ignore-path .eslintignore --ext .ts --fix .",
+        "lint:validation": "npx eslint --ignore-path .eslintignore --ext .ts ."
+    },
+    "author": "Luis Chavez",
+    "license": "ISC",
+    "private": true,
+    "dependencies": {
+        "@rsksmart/bridges-core-sdk": "file:.."
+    }
+}
