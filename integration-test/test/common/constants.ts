@@ -1,0 +1,1 @@
+export const EXTENDED_TIMEOUT = 7200 * 1000
