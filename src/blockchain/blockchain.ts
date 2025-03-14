@@ -160,6 +160,14 @@ export class BlockchainConnection implements Connection {
   async getTransactionReceipt (tx: string): Promise<ContractReceipt | null> {
     return this._signer.provider?.getTransactionReceipt(tx) ?? Promise.resolve(null)
   }
+
+  async executeTransaction (args: { to: string, data: string, value: string }): Promise<TxResult> {
+    const { to, data, value } = args
+    const gasLimit = await this._signer.estimateGas({ to, data, value })
+    const tx = await this._signer.sendTransaction({ to, data, value, gasLimit })
+    const receipt = await tx.wait()
+    return { txHash: receipt.transactionHash, successful: Boolean(receipt.status) }
+  }
 }
 
 /**
