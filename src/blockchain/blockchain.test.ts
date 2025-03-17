@@ -9,7 +9,9 @@ const serializer = JSONbig({ useNativeBigInt: true })
 jest.mock('ethers')
 const signerMock = {
   provider: { getBlockNumber: async () => Promise.resolve(1) },
-  getAddress: async () => Promise.resolve('0x9D93929A9099be4355fC2389FbF253982F9dF47c')
+  getAddress: async () => Promise.resolve('0x9D93929A9099be4355fC2389FbF253982F9dF47c'),
+  estimateGas: jest.fn().mockImplementation(async () => Promise.resolve(10)),
+  sendTransaction: jest.fn()
 }
 
 const providerMock: any = {
@@ -90,6 +92,33 @@ describe('BlockchainConnection class should', () => {
       } as any)
 
     rsk = await BlockchainConnection.createUsingEncryptedJson('json', 'pass')
+  })
+
+  test('execute and await an arbitrary transaction', async () => {
+    const resultMock = {
+      transactionHash: '0x9fafb16acfcc8533a6b249daa01111e381a1d386f7f46fd1932c3cd86b6eb320',
+      status: 1
+    }
+    const txMock = {
+      wait: jest.fn().mockImplementation(async () => Promise.resolve(resultMock))
+    }
+    signerMock.sendTransaction.mockImplementation(async () => Promise.resolve(txMock))
+    const result = await rsk.executeTransaction({
+      to: '0x9D93929A9099be4355fC2389FbF253982F9dF47c',
+      value: BigInt('500').toString(16),
+      data: '0xabcdef'
+    })
+    expect(signerMock.estimateGas).toBeCalledTimes(1)
+    expect(signerMock.sendTransaction).toBeCalledTimes(1)
+    expect(signerMock.sendTransaction).toBeCalledWith({
+      to: '0x9D93929A9099be4355fC2389FbF253982F9dF47c',
+      value: '1f4',
+      data: '0xabcdef',
+      gasLimit: 10
+    })
+    expect(result).toBeDefined()
+    expect(result.txHash).toBe(resultMock.transactionHash)
+    expect(result.successful).toBe(true)
   })
 
   test('be able to return connected address', async () => {
