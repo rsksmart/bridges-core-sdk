@@ -1,5 +1,5 @@
-import { describe, test, jest, expect, beforeAll } from '@jest/globals'
-import { estimateGas, executeContractFunction, BlockchainConnection, throwErrorIfFailedTx } from './blockchain'
+import { describe, test, jest, expect, beforeAll, beforeEach } from '@jest/globals'
+import { estimateGas, executeContractFunction, BlockchainConnection, throwErrorIfFailedTx, callContractFunction } from './blockchain'
 import * as ethers from 'ethers'
 import JSONbig from 'json-bigint'
 import { BridgeError } from '../client/httpClient'
@@ -218,6 +218,40 @@ describe('BlockchainConnection class should', () => {
       const result = await estimateGas(contractMock, 'contractMethodOk', 'test', 5)
       expect(serializer.stringify(result)).toEqual(serializer.stringify(BigInt(10)))
       expect(typeof result).toBe('bigint')
+    })
+  })
+
+  describe('callContractFunction function should', () => {
+    let contractMock: any
+    beforeEach(() => {
+      contractMock = {
+        callStatic: {
+          contractMethodOk: jest.fn(),
+          contractMethodFail: jest.fn().mockImplementation(async () => {
+            throw new Error('some error')
+          })
+        }
+      }
+    })
+
+    test('throw error if transaction failed', async () => {
+      expect.assertions(3)
+      await callContractFunction(contractMock, 'contractMethodFail').catch(e => {
+        expect(e).toBeInstanceOf(BridgeError)
+        expect(e.message).toBe('error during static call to function contractMethodFail')
+        expect(e.details.error.message).toBe('some error')
+      })
+    })
+    test('call function with correct parameters', async () => {
+      await callContractFunction(contractMock, 'contractMethodOk', 'test', 5)
+      expect(contractMock.callStatic.contractMethodOk).toBeCalledTimes(1)
+      expect(contractMock.callStatic.contractMethodOk).toBeCalledWith('test', 5)
+    })
+    test('build result correctly', async () => {
+      const expectedResult = BigInt(500)
+      contractMock.callStatic.contractMethodOk.mockResolvedValue(expectedResult)
+      const result = await callContractFunction<bigint>(contractMock, 'contractMethodOk', 'test', 5)
+      expect(result).toEqual(expectedResult)
     })
   })
 })
