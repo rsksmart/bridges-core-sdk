@@ -188,7 +188,7 @@ export class BlockchainReadOnlyConnection implements Connection {
    *
    * @returns { BlockchainReadOnlyConnection } Connection object
    *
-   * @throws { BridgeError } On faliled connection
+   * @throws { BridgeError } On failed connection
    */
   static async createUsingRpc (rpcUrl: string): Promise<BlockchainReadOnlyConnection> {
     const provider = new providers.JsonRpcProvider(rpcUrl)
@@ -272,6 +272,23 @@ export async function estimateGas (contract: Contract, functionName: string, ...
       message: `error estimating gas for function ${functionName}`,
       details: {
         error: e.message
+      }
+    })
+  }
+}
+
+export async function callContractFunction<R> (contract: Contract, functionName: string, ...params: unknown[]): Promise<R> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const result = await contract.callStatic[functionName]!(...params)
+    return result
+  } catch (e: any) {
+    throw new BridgeError({
+      timestamp: Date.now(),
+      recoverable: true,
+      message: `error during static call to function ${functionName}`,
+      details: {
+        error: e
       }
     })
   }
