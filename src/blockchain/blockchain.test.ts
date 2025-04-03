@@ -1,5 +1,5 @@
-import { describe, test, jest, expect, beforeAll } from '@jest/globals'
-import { estimateGas, executeContractFunction, BlockchainConnection, throwErrorIfFailedTx } from './blockchain'
+import { describe, test, jest, expect, beforeAll, beforeEach } from '@jest/globals'
+import { estimateGas, executeContractFunction, BlockchainConnection, throwErrorIfFailedTx, callContractFunction } from './blockchain'
 import * as ethers from 'ethers'
 import JSONbig from 'json-bigint'
 import { BridgeError } from '../client/httpClient'
@@ -9,7 +9,9 @@ const serializer = JSONbig({ useNativeBigInt: true })
 jest.mock('ethers')
 const signerMock = {
   provider: { getBlockNumber: async () => Promise.resolve(1) },
-  getAddress: async () => Promise.resolve('0x9D93929A9099be4355fC2389FbF253982F9dF47c')
+  getAddress: async () => Promise.resolve('0x9D93929A9099be4355fC2389FbF253982F9dF47c'),
+  estimateGas: jest.fn().mockImplementation(async () => Promise.resolve(10)),
+  sendTransaction: jest.fn()
 }
 
 const providerMock: any = {
@@ -90,6 +92,33 @@ describe('BlockchainConnection class should', () => {
       } as any)
 
     rsk = await BlockchainConnection.createUsingEncryptedJson('json', 'pass')
+  })
+
+  test('execute and await an arbitrary transaction', async () => {
+    const resultMock = {
+      transactionHash: '0x9fafb16acfcc8533a6b249daa01111e381a1d386f7f46fd1932c3cd86b6eb320',
+      status: 1
+    }
+    const txMock = {
+      wait: jest.fn().mockImplementation(async () => Promise.resolve(resultMock))
+    }
+    signerMock.sendTransaction.mockImplementation(async () => Promise.resolve(txMock))
+    const result = await rsk.executeTransaction({
+      to: '0x9D93929A9099be4355fC2389FbF253982F9dF47c',
+      value: BigInt('500').toString(16),
+      data: '0xabcdef'
+    })
+    expect(signerMock.estimateGas).toBeCalledTimes(1)
+    expect(signerMock.sendTransaction).toBeCalledTimes(1)
+    expect(signerMock.sendTransaction).toBeCalledWith({
+      to: '0x9D93929A9099be4355fC2389FbF253982F9dF47c',
+      value: '1f4',
+      data: '0xabcdef',
+      gasLimit: 10
+    })
+    expect(result).toBeDefined()
+    expect(result.txHash).toBe(resultMock.transactionHash)
+    expect(result.successful).toBe(true)
   })
 
   test('be able to return connected address', async () => {
@@ -189,6 +218,40 @@ describe('BlockchainConnection class should', () => {
       const result = await estimateGas(contractMock, 'contractMethodOk', 'test', 5)
       expect(serializer.stringify(result)).toEqual(serializer.stringify(BigInt(10)))
       expect(typeof result).toBe('bigint')
+    })
+  })
+
+  describe('callContractFunction function should', () => {
+    let contractMock: any
+    beforeEach(() => {
+      contractMock = {
+        callStatic: {
+          contractMethodOk: jest.fn(),
+          contractMethodFail: jest.fn().mockImplementation(async () => {
+            throw new Error('some error')
+          })
+        }
+      }
+    })
+
+    test('throw error if transaction failed', async () => {
+      expect.assertions(3)
+      await callContractFunction(contractMock, 'contractMethodFail').catch(e => {
+        expect(e).toBeInstanceOf(BridgeError)
+        expect(e.message).toBe('error during static call to function contractMethodFail')
+        expect(e.details.error.message).toBe('some error')
+      })
+    })
+    test('call function with correct parameters', async () => {
+      await callContractFunction(contractMock, 'contractMethodOk', 'test', 5)
+      expect(contractMock.callStatic.contractMethodOk).toBeCalledTimes(1)
+      expect(contractMock.callStatic.contractMethodOk).toBeCalledWith('test', 5)
+    })
+    test('build result correctly', async () => {
+      const expectedResult = BigInt(500)
+      contractMock.callStatic.contractMethodOk.mockResolvedValue(expectedResult)
+      const result = await callContractFunction<bigint>(contractMock, 'contractMethodOk', 'test', 5)
+      expect(result).toEqual(expectedResult)
     })
   })
 })

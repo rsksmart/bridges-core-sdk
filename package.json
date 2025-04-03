@@ -1,6 +1,6 @@
 {
     "name": "@rsksmart/bridges-core-sdk",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "license": "ISC",
     "description": "Core module of all the RSK bridges SDKs that contains common functionality",
     "main": "lib/index.js",
@@ -24,7 +24,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/rsksmart/bridges-core-sdk.git"
+        "url": "git+https://github.com/rsksmart/bridges-core-sdk.git"
     },
     "keywords": [
         "TokenBridge",
