@@ -1,6 +1,7 @@
 import { describe, test, expect, it } from '@jest/globals'
 import { type Network } from '../config'
 import { assertTruthy, isBtcAddress, isBtcMainnetAddress, isBtcNativeSegwitAddress, isBtcTestnetAddress, isLegacyBtcAddress, isRskAddress, isRskChecksummedAddress, isSecureUrl, isTaprootAddress, isValidSignature, rskChecksum, validateRequiredFields, isBtcZeroAddress, BTC_ZERO_ADDRESS_TESTNET, BTC_ZERO_ADDRESS_MAINNET } from './validation'
+import { ethers } from 'ethers'
 
 const testnetLegacyAddresses: string[] = [
   'mi3KGJwXHCCKddxnACouP5EwYq525qcQhU',
@@ -574,6 +575,17 @@ describe('isValidSignature function should', () => {
         false
       )
     ).toBe(false)
+  })
+
+  test('return true if the signature is valid regardless of the address checksum', () => {
+    const signature = 'b00dcad964ab97d965ac473fc8bb8ceb21ce13608cdc44d7b65e9d2d2443d0535a094ec449a18ef1f1a5d91cbee5302cfa9b99556a7de3414c190a1d3e811a5b1b'
+    const address = '0x26f40996671e622A0a6408B24C0e678D93a9eFEA'
+    const quoteHash = '767aa241ab418dfca0d418fef395d85c398a4c70a6ac4ea81429cf18ef4d6038'
+    const rskChecksumAddress = rskChecksum(address, 31)
+    const ethChecksumAddress = ethers.utils.getAddress(address)
+    expect(isValidSignature(address.toLowerCase(), quoteHash, signature)).toBe(true)
+    expect(isValidSignature(rskChecksumAddress, quoteHash, signature)).toBe(true)
+    expect(isValidSignature(ethChecksumAddress, quoteHash, signature)).toBe(true)
   })
 })
 
