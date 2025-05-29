@@ -126,7 +126,7 @@ export function isValidSignature (address: string, message: string, signature: s
   signature = signature.startsWith('0x') ? signature : '0x' + signature
   try {
     const recoveredAddress = utils.verifyMessage(parsedMessage, signature)
-    return address === recoveredAddress
+    return address.toLowerCase() === recoveredAddress.toLowerCase()
   } catch (e) {
     return false
   }
