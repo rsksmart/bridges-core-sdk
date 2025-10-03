@@ -69,7 +69,7 @@ jobs:
 
       - name: Clean install dependencies
         run: |
-          rm -rf dist
+          rm -rf lib
           npm ci
 
       - name: Update npm
