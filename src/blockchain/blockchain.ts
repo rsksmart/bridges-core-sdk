@@ -47,6 +47,13 @@ export interface Connection {
    * @returns { Promise<ContractReceipt | null> } promise with the receipt or null
    */
   getTransactionReceipt: (tx: string) => Promise<ContractReceipt | null>
+  /**
+   * Get the underlying provider object used by the connection. Useful for some operations that require
+   * the provider object and don't require wrapping because they are not complex enough.
+   *
+   * @returns { providers.Provider | undefined } the provider object or undefined if it doesn't exist
+   */
+  getUnderlyingProvider: () => providers.Provider | undefined
 }
 
 /**
@@ -168,6 +175,10 @@ export class BlockchainConnection implements Connection {
     const receipt = await tx.wait()
     return { txHash: receipt.transactionHash, successful: Boolean(receipt.status) }
   }
+
+  getUnderlyingProvider (): providers.Provider | undefined {
+    return this.signer.provider
+  }
 }
 
 /**
@@ -209,6 +220,10 @@ export class BlockchainReadOnlyConnection implements Connection {
 
   async getTransactionReceipt (tx: string): Promise<ContractReceipt> {
     return this._provider.getTransactionReceipt(tx)
+  }
+
+  getUnderlyingProvider (): providers.Provider {
+    return this._provider
   }
 }
 
