@@ -1,4 +1,5 @@
 version: 2
+
 updates:
   # npm - Version and Security updates
   - package-ecosystem: "npm"
