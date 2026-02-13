@@ -488,25 +488,25 @@ describe('isValidSignature function should', () => {
   test('return true on valid signature of hex message', () => {
     expect(
       isValidSignature(
-        '0x9D93929A9099be4355fC2389FbF253982F9dF47c',
-        '587b2e46d5c2585319038a15321e60996f37a49f4482c0528c64dded18fb8ef9',
-        '6f857dc58176de3216bcfd2e9b7aa0a61eda1a922bdd39c4d46632917d188e1008fa617dbd33f9b878baf41673d5b1b6d5ae2767dff5d7eb469a195283c143091c'
+        '0xD839C223634b224327430Bb7062858109C850bf9',
+        '4af4cced069b4ac33fa19c7f63e196ecf08da0f5fea66988722290da5fa883a2',
+        'd0e0169077b37ab5f46571d86de3c883baff364acb9ab299d961c1bfdaef7cb116e06ec7a0a95d7b1d79e99b55f2db13a1e0d1d8b1b5525d98c31959704075961b'
       )
     ).toBe(true)
 
     expect(
       isValidSignature(
-        '0x9D93929A9099be4355fC2389FbF253982F9dF47c',
-        '839b12b679453ee9402ebd356676ac9c01bef213bf96d7ed7a7ceaf4c98e3fb4',
-        '015e12a63ceb7cc51dc90fc7301df21f4d511dcb5ce76270f2699d87cc33e7cd1dc36a0f65c8197d9e9f60a6a712a70eaf4de65b1f15ff718604f0f86fefbb371c'
+        '0xD839C223634b224327430Bb7062858109C850bf9',
+        '7803021a2b9356037ba6861e342ea378bf1210b779ea606fbe9a10ca90784930',
+        '1592f12f35443e87fc848d8809f599d237b1e62dfbd950331009fed3a7508ed41fa298ec19da8e278ad7fca90e353f7f9f8e30e6c4641b1e5eaaad88f42f7ed91b'
       )
     ).toBe(true)
 
     expect(
       isValidSignature(
-        '0xd053b9B695BEb7104deEa56773197F05AD03E4e0',
-        'b19d5897c58319d51d070a8ead1f353b985587a11707790c9a548f444cb522de',
-        'f2943e7cbc97db6b4bddabca5500cccb615c9ea83cbd9728d73e385bb0d7f95c14cc32e10738e214997701f5db10bd8fd72d132f45f114f56b74749fabc696aa1c'
+        '0xAFf2c034FD8Bc690e62A897BbC5A6C4dF2321992',
+        'fc4a342e2e2ebe0186964a99f723deee951bd056d5a9548ec481318d6a89fb3f',
+        'a4f572b80217b2dae255d716a132db2eb5991e2ffb35c8692c7c98e72b9ce28264d9de32977296aadb46468d952751d1d313b1b51ea56ab532c84a4852162b0b1b'
       )
     ).toBe(true)
   })
@@ -514,18 +514,18 @@ describe('isValidSignature function should', () => {
   test('return true on valid signature of non hex message', () => {
     expect(
       isValidSignature(
-        '0x9D93929A9099be4355fC2389FbF253982F9dF47c',
+        '0x57f9F71E683E2A8ff3d2f394aE45C58b2d913A35',
         'test message',
-        '0x3d933e4700bab82c48afa479da53bcafdfc09296838b8e08069589218d53750d65e88b9bf4ae3f07f8ffa309b246bf2e1e153415362758c364a404a5006b4ddc1c',
+        '0x318b8de0855be18d1e0061e7b18497d43d54022f8dc610ecd5c64d1153eff6010d96242476d0067a144a59f93ff43e6a467a7ad3d6145a9006a83d4cafbbc04a1c',
         false
       )
     ).toBe(true)
 
     expect(
       isValidSignature(
-        '0x9D93929A9099be4355fC2389FbF253982F9dF47c',
-        '0x6c7569732063686176657a',
-        '0xb9d40c5cab5d6e41451b9ad3b6d6a987ba1ab97e0b2564e6a66f0d25a05981da569aa4cf1a9b58da8394a4f32fd0ab716118f234b4729c7f5350724441ceb26f1c',
+        '0x57f9F71E683E2A8ff3d2f394aE45C58b2d913A35',
+        '0x74657374206d657373616765',
+        '0x1d246d9e91d1b372d266678f9ce915522912d88c5ce918364b442702a0ef591274083f4af0f483a794a965e74cfcf76ace04067c0ffbf14862acbb5ab0a8ad5d1b',
         false
       )
     ).toBe(true)
@@ -578,9 +578,9 @@ describe('isValidSignature function should', () => {
   })
 
   test('return true if the signature is valid regardless of the address checksum', () => {
-    const signature = 'b00dcad964ab97d965ac473fc8bb8ceb21ce13608cdc44d7b65e9d2d2443d0535a094ec449a18ef1f1a5d91cbee5302cfa9b99556a7de3414c190a1d3e811a5b1b'
-    const address = '0x26f40996671e622A0a6408B24C0e678D93a9eFEA'
-    const quoteHash = '767aa241ab418dfca0d418fef395d85c398a4c70a6ac4ea81429cf18ef4d6038'
+    const signature = '2ccc4b6b15da4cac68329bec3497646cd8531d5da3ab2cce241c50447c9129df7e90205bb14490c5512ab2e722e3b85fc605a5037b14adceff205b125e580cec1c'
+    const address = '0x57f9F71E683E2A8ff3d2f394aE45C58b2d913A35'
+    const quoteHash = 'fc4a342e2e2ebe0186964a99f723deee951bd056d5a9548ec481318d6a89fb3f'
     const rskChecksumAddress = rskChecksum(address, 31)
     const ethChecksumAddress = ethers.utils.getAddress(address)
     expect(isValidSignature(address.toLowerCase(), quoteHash, signature)).toBe(true)
