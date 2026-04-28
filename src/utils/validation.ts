@@ -122,10 +122,10 @@ export function isRskAddress (address: string): boolean {
 
 export function isValidSignature (address: string, message: string, signature: string, isHexMessage = true): boolean {
   message = isHexMessage && !message.startsWith('0x') ? '0x' + message : message
-  const parsedMessage = isHexMessage ? utils.arrayify(message) : message
+  const parsedMessage = isHexMessage ? utils.arrayify(message) : utils.hashMessage(message)
   signature = signature.startsWith('0x') ? signature : '0x' + signature
   try {
-    const recoveredAddress = utils.verifyMessage(parsedMessage, signature)
+    const recoveredAddress = utils.recoverAddress(parsedMessage, signature)
     return address.toLowerCase() === recoveredAddress.toLowerCase()
   } catch (e) {
     return false
