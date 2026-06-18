@@ -67,22 +67,22 @@ function mockSlowBodyResponse (init?: RequestInit): Response {
 }
 
 describe('Fetch client implementation should', () => {
-  test('throw FlyoverError on GET client side error', async () => {
+  test('throw BridgeError on GET client side error', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock()))
     await expect(fetchClient.get('url')).rejects.toThrow(BridgeError)
   })
 
-  test('throw FlyoverError on POST client side error', async () => {
+  test('throw BridgeError on POST server side error', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock({ clientSide: false })))
     await expect(fetchClient.post('url', { value: 5 })).rejects.toThrow(BridgeError)
   })
 
-  test('throw FlyoverError on GET server side error', async () => {
+  test('throw BridgeError on GET server side error', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock({ clientSide: false })))
     await expect(fetchClient.get('url')).rejects.toThrow(BridgeError)
   })
 
-  test('throw FlyoverError on POST server side error', async () => {
+  test('throw BridgeError on POST client side error', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock()))
     await expect(fetchClient.post('url', { value: 5 })).rejects.toThrow(BridgeError)
   })
