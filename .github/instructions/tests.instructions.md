@@ -99,7 +99,7 @@ Manual mock objects for complex types (ethers signer, provider, contract) are de
 | `expect(() => fn()).toThrow(BridgeError)` | Synchronous throws |
 | `await expect(p).rejects.toThrow(BridgeError)` | Async throws (preferred) |
 | `expect(mock).toHaveBeenCalledTimes(n)` | Mock call count |
-| `it.each([...])('%s', ...)` | Parameterised input variants |
+| `it.each([...])('%s', ...)` | Parameterised input variants (import `it` from `@jest/globals`) |
 
 ## Integration tests
 

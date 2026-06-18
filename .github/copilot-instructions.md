@@ -12,7 +12,7 @@
 ## Modules and exports
 
 - No `export default` in any `.ts` file. All exports must be named.
-- Every domain folder must have a barrel `index.ts` that uses `export *` re-exports.
+- Domain folders with multiple files use a barrel `index.ts` with `export *` re-exports (`client/`, `config/`, `utils/`, `common/`). Single-file domains (`blockchain/blockchain.ts`, `sdk/core.ts`) are re-exported directly from the root `src/index.ts` — no intermediate barrel needed.
 - The build output directory is `lib/`, not `dist/`. CI cleanup steps must use `rm -rf lib`.
 - The `initialization` subpath (`src/initialization.ts`) is a separate build target — do not re-export it from `src/index.ts`.
 

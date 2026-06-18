@@ -87,12 +87,15 @@ Zero `@` decorator usage anywhere in `src/`.
 
 ### `any` usage
 
-`any` appears only in:
+Avoid `any` in new code. Accepted existing uses:
 - `catch` blocks (`catch (e: any)`)
 - Test mocks (e.g. `contractMock: any`)
 - `BridgeError.details` field (intentionally loose)
+- Function parameters that are genuinely untyped at the boundary (e.g. `createUsingEncryptedJson(json: any)`)
+- `response.json()` return value when parsing untyped server responses (e.g. `crossFetch.ts`)
+- `as any` casts needed to satisfy the type checker on complex generics (e.g. `bridges[bridgeName] = bridge as any`, `(obj as any)[key]` in `deepFreeze`)
 
-Do not introduce `any` elsewhere.
+Do not use `any` for laziness — only where the type is genuinely unknown or the cast is unavoidable.
 
 ---
 
@@ -299,9 +302,11 @@ beforeEach(() => {
 
 ### Parameterized tests
 
-`it.each(...)` is used for validating many input variants (e.g. BTC address formats):
+`it.each(...)` is used for validating many input variants (e.g. BTC address formats). When using `it.each`, add `it` to the `@jest/globals` import alongside `test`:
 
 ```typescript
+import { describe, test, expect, it } from '@jest/globals'
+
 it.each([
   ['valid mainnet P2PKH', 'valid address', true],
   ['invalid', 'bad address', false],
@@ -322,7 +327,7 @@ the first failure and a 2-hour timeout (`EXTENDED_TIMEOUT = 7200 * 1000`).
 
 ### Barrel exports only
 
-Every domain folder has an `index.ts` re-exporting everything:
+Domain folders with multiple files have an `index.ts` barrel re-exporting everything (`client/`, `config/`, `utils/`, `common/`). Single-file domains (`blockchain/blockchain.ts`, `sdk/core.ts`) are re-exported directly from the root `src/index.ts` — no intermediate barrel is needed for them.
 
 ```typescript
 // src/client/index.ts
@@ -424,8 +429,7 @@ Use a factory function returning an object literal when a class adds no value.
 
 ### Primary: `async/await`
 
-All public async methods use `async/await`. `.then()` is used only in internal
-implementation details, not in public-facing code.
+`async/await` is the dominant pattern. `.then()` is also used in some methods — both internal helpers and public-facing ones — when chaining a single transformation is more concise than an `async` wrapper (e.g. `getChainId()`, `get()`, `post()`, `handleResponse()`). Both styles are acceptable.
 
 ### Dynamic `import()` for lazy-loaded bridges
 

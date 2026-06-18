@@ -68,8 +68,8 @@ Use generics sparingly. Appropriate uses: type-narrowing assertions, generic ret
 
 ## Strict compliance
 
-- No `any` outside of catch blocks, test mocks, or `BridgeError.details`.
-- All `noUnused*`, `noImplicit*`, and `noUncheckedIndexedAccess` flags are enabled — do not suppress them with `// @ts-ignore` or `// eslint-disable`.
+- Avoid `any` in new code. Existing accepted uses: `catch (e: any)`, test mocks, `BridgeError.details`, function parameters that are genuinely untyped at the boundary (e.g. encrypted JSON input), `response.json()` parsing, and `as any` casts needed to satisfy the type checker on complex generics (e.g. `bridges[bridgeName] = bridge as any`, `(obj as any)[key]`).
+- The repo uses narrowly-scoped `// eslint-disable-next-line` for specific rules (e.g. `@typescript-eslint/no-non-null-assertion`). Do not flag these as violations. Broad `// eslint-disable` file-level disables are not acceptable.
 
 ## Naming
 
