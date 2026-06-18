@@ -1,6 +1,8 @@
 
 export interface HttpClientOptions {
   includeCaptcha: boolean
+  maxResponseBytes?: number
+  maxResponseTimeMs?: number
 }
 export interface HttpClient {
   get: <T>(url: string, options?: Partial<HttpClientOptions>) => Promise<T>
