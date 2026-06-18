@@ -1,13 +1,13 @@
 import { describe, test, expect, jest, beforeEach, afterEach, afterAll } from '@jest/globals'
 
-import { DEFAULT_MAX_RESPONSE_BYTES, DEFAULT_MAX_RESPONSE_TIME_MS, getHttpClient } from './crossFetch'
+import { DEFAULT_MAX_RESPONSE_BYTES, DEFAULT_MAX_RESPONSE_TIME_MS, getHttpClient } from './fetch'
 import { BridgeError } from './httpClient'
 
 import JSONbig from 'json-bigint'
 
 const mockCaptchaToken = 'token'
 const mockedFetch = jest.spyOn(globalThis, 'fetch')
-const crossFetch = getHttpClient(async () => Promise.resolve(mockCaptchaToken))
+const fetchClient = getHttpClient(async () => Promise.resolve(mockCaptchaToken))
 
 beforeEach(() => {
   mockedFetch.mockReset()
@@ -66,32 +66,32 @@ function mockSlowBodyResponse (init?: RequestInit): Response {
   }), { status: 200 })
 }
 
-describe('Cross fetch client implementation should', () => {
+describe('Fetch client implementation should', () => {
   test('throw FlyoverError on GET client side error', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock()))
-    await expect(crossFetch.get('url')).rejects.toThrow(BridgeError)
+    await expect(fetchClient.get('url')).rejects.toThrow(BridgeError)
   })
 
   test('throw FlyoverError on POST client side error', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock({ clientSide: false })))
-    await expect(crossFetch.post('url', { value: 5 })).rejects.toThrow(BridgeError)
+    await expect(fetchClient.post('url', { value: 5 })).rejects.toThrow(BridgeError)
   })
 
   test('throw FlyoverError on GET server side error', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock({ clientSide: false })))
-    await expect(crossFetch.get('url')).rejects.toThrow(BridgeError)
+    await expect(fetchClient.get('url')).rejects.toThrow(BridgeError)
   })
 
   test('throw FlyoverError on POST server side error', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock()))
-    await expect(crossFetch.post('url', { value: 5 })).rejects.toThrow(BridgeError)
+    await expect(fetchClient.post('url', { value: 5 })).rejects.toThrow(BridgeError)
   })
 
   test('set error fields correctly', async () => {
     let error: BridgeError | undefined
     mockedFetch.mockReturnValueOnce(Promise.resolve(getResponseErrorMock()))
     try {
-      await crossFetch.get('any url')
+      await fetchClient.get('any url')
     } catch (e: any) {
       error = e
     }
@@ -103,7 +103,7 @@ describe('Cross fetch client implementation should', () => {
 
   test('parse json response', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(new Response(JSON.stringify({ value: 7 }), { status: 200 })))
-    const response = await crossFetch.get('any url')
+    const response = await fetchClient.get('any url')
     expect(response).toEqual({ value: 7 })
   })
 
@@ -114,7 +114,7 @@ describe('Cross fetch client implementation should', () => {
       )
     )
 
-    const response = await crossFetch.post('any url', { value: BigInt('509324520935263456336757') }) as any
+    const response = await fetchClient.post('any url', { value: BigInt('509324520935263456336757') }) as any
 
     expect(mockedFetch).toBeCalledWith('any url', expect.objectContaining({
       method: 'POST',
@@ -152,19 +152,19 @@ describe('Cross fetch client implementation should', () => {
 
     const testCases: Array<() => Promise<void>> = [
       async () => {
-        await crossFetch.post('any url', { value: 'any' })
+        await fetchClient.post('any url', { value: 'any' })
         expect(mockedFetch).toBeCalledWith('any url', expect.objectContaining(postRqWithoutCaptcha))
       },
       async () => {
-        await crossFetch.post('any url', { value: 'any' }, { includeCaptcha: true })
+        await fetchClient.post('any url', { value: 'any' }, { includeCaptcha: true })
         expect(mockedFetch).toBeCalledWith('any url', expect.objectContaining(postRqWithCaptcha))
       },
       async () => {
-        await crossFetch.get('any url')
+        await fetchClient.get('any url')
         expect(mockedFetch).toBeCalledWith('any url', expect.objectContaining({}))
       },
       async () => {
-        await crossFetch.get('any url', { includeCaptcha: true })
+        await fetchClient.get('any url', { includeCaptcha: true })
         expect(mockedFetch).toBeCalledWith('any url', expect.objectContaining(getRqWithCaptcha))
       }
     ]
@@ -177,14 +177,14 @@ describe('Cross fetch client implementation should', () => {
 
   test('reject success responses above the default size limit', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getOversizedResponse(DEFAULT_MAX_RESPONSE_BYTES + 1)))
-    await expect(crossFetch.get('any url')).rejects.toThrow(
+    await expect(fetchClient.get('any url')).rejects.toThrow(
       `Response body exceeds maximum size of ${DEFAULT_MAX_RESPONSE_BYTES} bytes`
     )
   })
 
   test('reject error responses above the default size limit', async () => {
     mockedFetch.mockReturnValueOnce(Promise.resolve(getOversizedResponse(DEFAULT_MAX_RESPONSE_BYTES + 1, 400)))
-    await expect(crossFetch.get('any url')).rejects.toThrow(
+    await expect(fetchClient.get('any url')).rejects.toThrow(
       `Response body exceeds maximum size of ${DEFAULT_MAX_RESPONSE_BYTES} bytes`
     )
   })
@@ -192,7 +192,7 @@ describe('Cross fetch client implementation should', () => {
   test('respect custom maxResponseBytes limit', async () => {
     const customLimit = 512
     mockedFetch.mockReturnValueOnce(Promise.resolve(getOversizedResponse(customLimit + 1)))
-    await expect(crossFetch.get('any url', { maxResponseBytes: customLimit })).rejects.toThrow(
+    await expect(fetchClient.get('any url', { maxResponseBytes: customLimit })).rejects.toThrow(
       `Response body exceeds maximum size of ${customLimit} bytes`
     )
   })
@@ -200,14 +200,14 @@ describe('Cross fetch client implementation should', () => {
   describe('response size limit', () => {
     test('reject POST success responses above the size limit', async () => {
       mockedFetch.mockReturnValueOnce(Promise.resolve(getOversizedResponse(1024)))
-      await expect(crossFetch.post('any url', { value: 1 }, { maxResponseBytes: 512 })).rejects.toThrow(
+      await expect(fetchClient.post('any url', { value: 1 }, { maxResponseBytes: 512 })).rejects.toThrow(
         'Response body exceeds maximum size of 512 bytes'
       )
     })
 
     test('reject POST error responses above the size limit', async () => {
       mockedFetch.mockReturnValueOnce(Promise.resolve(getOversizedResponse(1024, 500)))
-      await expect(crossFetch.post('any url', { value: 1 }, { maxResponseBytes: 512 })).rejects.toThrow(
+      await expect(fetchClient.post('any url', { value: 1 }, { maxResponseBytes: 512 })).rejects.toThrow(
         'Response body exceeds maximum size of 512 bytes'
       )
     })
@@ -215,20 +215,20 @@ describe('Cross fetch client implementation should', () => {
     test('allow responses exactly at the byte limit', async () => {
       const body = JSON.stringify({ value: 7 })
       mockedFetch.mockReturnValueOnce(Promise.resolve(new Response(body, { status: 200 })))
-      await expect(crossFetch.get('any url', { maxResponseBytes: body.length })).resolves.toEqual({ value: 7 })
+      await expect(fetchClient.get('any url', { maxResponseBytes: body.length })).resolves.toEqual({ value: 7 })
     })
 
     test('reject multi-chunk responses that exceed the limit cumulatively', async () => {
       const customLimit = 512
       mockedFetch.mockReturnValueOnce(Promise.resolve(getMultiChunkOversizedResponse(customLimit + 1)))
-      await expect(crossFetch.get('any url', { maxResponseBytes: customLimit })).rejects.toThrow(
+      await expect(fetchClient.get('any url', { maxResponseBytes: customLimit })).rejects.toThrow(
         `Response body exceeds maximum size of ${customLimit} bytes`
       )
     })
 
     test('not misclassify size limit errors as timeout errors', async () => {
       mockedFetch.mockReturnValueOnce(Promise.resolve(getOversizedResponse(1024)))
-      await expect(crossFetch.get('any url', { maxResponseBytes: 512 })).rejects.toThrow(
+      await expect(fetchClient.get('any url', { maxResponseBytes: 512 })).rejects.toThrow(
         'Response body exceeds maximum size of 512 bytes'
       )
     })
@@ -246,7 +246,7 @@ describe('Cross fetch client implementation should', () => {
     test('reject requests that exceed the default time limit', async () => {
       mockedFetch.mockImplementation(async (_url, init) => mockHangingFetch(init))
 
-      const promise = crossFetch.get('any url')
+      const promise = fetchClient.get('any url')
       const expectation = expect(promise).rejects.toThrow(
         `Request exceeded maximum time of ${DEFAULT_MAX_RESPONSE_TIME_MS} ms`
       )
@@ -258,7 +258,7 @@ describe('Cross fetch client implementation should', () => {
       const customLimit = 2000
       mockedFetch.mockImplementation(async (_url, init) => mockHangingFetch(init))
 
-      const promise = crossFetch.post('any url', { value: 1 }, { maxResponseTimeMs: customLimit })
+      const promise = fetchClient.post('any url', { value: 1 }, { maxResponseTimeMs: customLimit })
       const expectation = expect(promise).rejects.toThrow(
         `Request exceeded maximum time of ${customLimit} ms`
       )
@@ -272,7 +272,7 @@ describe('Cross fetch client implementation should', () => {
         return Promise.resolve(mockSlowBodyResponse(init))
       })
 
-      const promise = crossFetch.get('any url', { maxResponseTimeMs: customLimit })
+      const promise = fetchClient.get('any url', { maxResponseTimeMs: customLimit })
       const expectation = expect(promise).rejects.toThrow(
         `Request exceeded maximum time of ${customLimit} ms`
       )
@@ -282,14 +282,14 @@ describe('Cross fetch client implementation should', () => {
 
     test('allow responses within the time limit', async () => {
       mockedFetch.mockReturnValueOnce(Promise.resolve(new Response(JSON.stringify({ value: 7 }), { status: 200 })))
-      const promise = crossFetch.get('any url', { maxResponseTimeMs: 1000 })
+      const promise = fetchClient.get('any url', { maxResponseTimeMs: 1000 })
       await jest.advanceTimersByTimeAsync(500)
       await expect(promise).resolves.toEqual({ value: 7 })
     })
 
     test('propagate non-timeout errors unchanged', async () => {
       mockedFetch.mockRejectedValueOnce(new Error('Network failure'))
-      await expect(crossFetch.get('any url')).rejects.toThrow('Network failure')
+      await expect(fetchClient.get('any url')).rejects.toThrow('Network failure')
     })
   })
 
@@ -299,7 +299,7 @@ describe('Cross fetch client implementation should', () => {
         expect(init?.signal).toBeInstanceOf(AbortSignal)
         return Promise.resolve(new Response(JSON.stringify({ value: 7 }), { status: 200 }))
       })
-      await crossFetch.get('any url')
+      await fetchClient.get('any url')
     })
   })
 })
