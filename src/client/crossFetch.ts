@@ -1,4 +1,3 @@
-import fetch from 'cross-fetch'
 import JSONbig from 'json-bigint'
 import { type CaptchaTokenResolver, type HttpClient, type HttpClientOptions, BridgeError } from './httpClient'
 
@@ -12,7 +11,7 @@ export function getHttpClient (resolveCaptchaToken: CaptchaTokenResolver): HttpC
     getCaptchaToken: resolveCaptchaToken,
 
     async get<T>(url: string, options?: Partial<HttpClientOptions>): Promise<T> {
-      const headers: HeadersInit | undefined = (options != null) && options.includeCaptcha === true
+      const headers: Record<string, string> | undefined = (options != null) && options.includeCaptcha === true
         ? {
             'Content-Type': 'application/json',
             'X-Captcha-Token': await this.getCaptchaToken()
@@ -22,7 +21,7 @@ export function getHttpClient (resolveCaptchaToken: CaptchaTokenResolver): HttpC
     },
 
     async post<T>(url: string, body: object, options?: Partial<HttpClientOptions>): Promise<T> {
-      const headers: HeadersInit = {
+      const headers: Record<string, string> = {
         'Content-Type': 'application/json'
       }
       if (options?.includeCaptcha === true) {

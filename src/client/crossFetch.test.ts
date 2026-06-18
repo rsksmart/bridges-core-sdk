@@ -1,17 +1,21 @@
-import { describe, test, expect, jest, beforeEach, afterEach } from '@jest/globals'
-import fetch from 'cross-fetch'
+import { describe, test, expect, jest, beforeEach, afterEach, afterAll } from '@jest/globals'
 
 import { DEFAULT_MAX_RESPONSE_BYTES, DEFAULT_MAX_RESPONSE_TIME_MS, getHttpClient } from './crossFetch'
 import { BridgeError } from './httpClient'
 
 import JSONbig from 'json-bigint'
 
-jest.mock('cross-fetch')
-
 const mockCaptchaToken = 'token'
+const mockedFetch = jest.spyOn(globalThis, 'fetch')
 const crossFetch = getHttpClient(async () => Promise.resolve(mockCaptchaToken))
 
-const mockedFetch = fetch as jest.Mock<typeof fetch>
+beforeEach(() => {
+  mockedFetch.mockReset()
+})
+
+afterAll(() => {
+  mockedFetch.mockRestore()
+})
 
 function getResponseErrorMock (arg: { clientSide: boolean } = { clientSide: true }): Response {
   return new Response(JSON.stringify({
