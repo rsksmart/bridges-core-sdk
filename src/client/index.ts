@@ -1,2 +1,2 @@
-export * from './crossFetch'
+export * from './fetch'
 export * from './httpClient'
