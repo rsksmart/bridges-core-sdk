@@ -87,7 +87,25 @@ function semverCmp(a, b) {
   if (pa.pre === pb.pre) return 0;
   if (!pa.pre) return 1;
   if (!pb.pre) return -1;
-  return pa.pre < pb.pre ? -1 : 1;
+  // SemVer §11: compare dot-separated pre-release identifiers one by one;
+  // numeric identifiers compare numerically and rank below alphanumeric ones,
+  // and a shorter identifier list ranks below a longer one.
+  const as = pa.pre.split('.'), bs = pb.pre.split('.');
+  for (let i = 0; i < Math.max(as.length, bs.length); i++) {
+    const x = as[i], y = bs[i];
+    if (x === undefined) return -1;
+    if (y === undefined) return 1;
+    const xn = /^\d+$/.test(x), yn = /^\d+$/.test(y);
+    if (xn && yn) {
+      const diff = Number(x) - Number(y);
+      if (diff !== 0) return diff;
+    } else if (xn !== yn) {
+      return xn ? -1 : 1;
+    } else if (x !== y) {
+      return x < y ? -1 : 1;
+    }
+  }
+  return 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -369,21 +387,21 @@ for (const { older, newer, kind } of pairs) {
 
   const raw = gitLines(
     'log', '--cherry-pick', '--left-only', '--no-merges',
-    '--pretty=format:%H\t%an\t%ae\t%aI\t%s',
+    '--pretty=format:%H\t%an\t%aI\t%s',
     `${olderRef}...${newerRef}`,
   );
 
   const commits = [];
   for (const line of raw) {
-    // Subjects may contain tabs; only the first 4 fields are fixed.
+    // Subjects may contain tabs; only the first 3 fields are fixed.
     const parts = line.split('\t');
-    if (parts.length < 5) continue;
-    const [sha, author, email, date, ...rest] = parts;
+    if (parts.length < 4) continue;
+    const [sha, author, date, ...rest] = parts;
     const subject = rest.join('\t');
     if (subject.startsWith('Revert "')) continue;
     if (wasRevertedOn(older, sha)) continue;
     commits.push({
-      sha, author, email, date, subject,
+      sha, author, date, subject,
       pr: extractPrNumber(subject),
       releasedIn: releasedInForSha(sha),
     });
