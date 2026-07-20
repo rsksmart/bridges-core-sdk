@@ -129,7 +129,7 @@ if (cfg.skipFetch) {
 
 function detectGithubSlug() {
   const url = gitOk('remote', 'get-url', cfg.remote).trim();
-  const m = url.match(/^(?:git@github\.com:|https:\/\/github\.com\/)(.+?)(?:\.git)?$/);
+  const m = url.match(/^(?:git@github\.com:|ssh:\/\/git@github\.com(?::\d+)?\/|https:\/\/github\.com\/)(.+?)(?:\.git)?$/);
   return m?.[1] ?? '';
 }
 
