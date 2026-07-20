@@ -7,7 +7,7 @@ The job is **detection-only**. No branches are modified. The output is a
 markdown report kept as a workflow artifact.
 
 This workflow was first introduced in the `liquidity-provider-server` repo
-([FLY-2292][lps-jira]) and adopted here for the Flyover SDK under
+([FLY-2292][lps-jira]) and adopted here in `bridges-core-sdk` under
 [FLY-2355][jira]. It is phase 1 of a planned three-phase rollout.
 
 ## What it does
@@ -169,7 +169,7 @@ and falls back cleanly when it can't. Three things can go wrong:
 |---|---|
 | `gh` not on PATH | Logs `gh CLI unavailable or unauthenticated — tag-only release info`, skips the enrichment step. |
 | `gh` installed but not authenticated (`gh auth status` fails) | Same — silent fallback to tag-only mode. |
-| `gh release list` fails (network / auth / API error) | Logs a warning, continues without release markers. |
+| `gh release list` fails (network / auth / API error) | Logs `gh release list failed (auth or network) — continuing without release marks`, continues without release markers. |
 
 In every fallback path you still get:
 
