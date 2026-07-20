@@ -207,7 +207,7 @@ if (ghSlug) {
     log.info('gh CLI unavailable or unauthenticated — tag-only release info');
   }
 } else {
-  log.info('gh CLI unavailable or unauthenticated — tag-only release info');
+  log.info('Non-GitHub remote — skipping gh release enrichment, tag-only release info');
 }
 
 // ---------------------------------------------------------------------------
