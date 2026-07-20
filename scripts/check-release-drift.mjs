@@ -324,8 +324,15 @@ function checkMergeability(older, newer) {
       return { clean: true, conflicts: [] };
     } catch (err) {
       if (err.status === 1 && typeof err.stdout === 'string') {
-        const lines = err.stdout.split('\n').filter((l) => l.length > 0);
-        return { clean: false, conflicts: lines.slice(1) };
+        // Conflict output sections: tree OID, then conflicted file names
+        // (--name-only), then a blank line and free-form informational
+        // messages (`Auto-merging …`, `CONFLICT (…): …`) which are not paths.
+        const lines = err.stdout.split('\n');
+        const blank = lines.indexOf('');
+        const conflicts = lines
+          .slice(1, blank === -1 ? lines.length : blank)
+          .filter((l) => l.length > 0);
+        return { clean: false, conflicts };
       }
       return { clean: null, error: (err.stderr || err.message || '').toString().trim() };
     }
@@ -534,7 +541,7 @@ if (totalDrift === 0) {
   if (newestDrift) out.push(`| Newest drifted commit | ${newestDrift.date.slice(0, 10)} (in \`${newestDrift.pair}\`) |`);
   out.push('');
   if (ghLatestTag) {
-    out.push(`_GitHub "latest" release marker reflects the current \`gh release view --json isLatest\` answer for \`${ghSlug}\`._`);
+    out.push(`_GitHub "latest" release marker reflects the \`isLatest\` flag from \`gh release list\` for \`${ghSlug}\`._`);
     out.push('');
   }
 }
