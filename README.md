@@ -2,6 +2,7 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/rsksmart/bridges-core-sdk/badge)](https://scorecard.dev/viewer/?uri=github.com/rsksmart/bridges-core-sdk)
 [![CodeQL](https://github.com/rsksmart/bridges-core-sdk/workflows/CodeQL/badge.svg)](https://github.com/rsksmart/bridges-core-sdk/actions?query=workflow%3ACodeQL)
 [![CI](https://github.com/rsksmart/bridges-core-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/rsksmart/bridges-core-sdk/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/rsksmart/bridges-core-sdk/branch/main/graph/badge.svg)](https://codecov.io/gh/rsksmart/bridges-core-sdk)
 
 This is the core module shared by all the bridges SDKs. This has common functionality such as logic to call the blockchain, HTTP client configuration, common validations and the configuration objects to initialize each bridges product.
 
