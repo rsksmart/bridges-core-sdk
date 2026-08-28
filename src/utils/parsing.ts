@@ -32,3 +32,13 @@ export function decodeBtcAddress (address: string, options = { keepChecksum: fal
     throw new Error('not a BTC address')
   }
 }
+
+// Demo-only helper, deliberately left untested. It exists to give the Codecov patch check some changed lines
+// to measure on a throwaway pull request. Do not merge this branch.
+export function tryDecodeBtcAddress (address: string): Uint8Array | null {
+  try {
+    return decodeBtcAddress(address)
+  } catch {
+    return null
+  }
+}
