@@ -33,7 +33,7 @@ export function decodeBtcAddress (address: string, options = { keepChecksum: fal
   }
 }
 
-// Demo-only helper. It exists to give the Codecov patch check some changed lines
+// Demo-only helper, deliberately left untested. It exists to give the Codecov patch check some changed lines
 // to measure on a throwaway pull request. Do not merge this branch.
 export function tryDecodeBtcAddress (address: string): Uint8Array | null {
   try {
