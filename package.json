@@ -72,7 +72,7 @@
         "eslint-config-standard-with-typescript": "^34.0.0",
         "eslint-plugin-import": "^2.27.5",
         "eslint-plugin-n": "^15.6.1",
-        "eslint-plugin-promise": "^6.1.1",
+        "eslint-plugin-promise": "^7.2.1",
         "json-bigint": "^1.0.0",
         "rollup": "^3.26.3",
         "rollup-plugin-dts": "^6.1.0",
