@@ -301,5 +301,37 @@ describe('Fetch client implementation should', () => {
       })
       await fetchClient.get('any url')
     })
+
+    test('reject redirects on GET and POST by default', async () => {
+      mockedFetch.mockImplementation(async () => Promise.resolve(new Response(JSON.stringify({ value: 7 }), { status: 200 })))
+      for (const options of [undefined, {}, { followRedirects: false }]) {
+        await fetchClient.get('any url', options)
+        expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ redirect: 'error' }))
+        await fetchClient.post('any url', { value: 1 }, options)
+        expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ method: 'POST', redirect: 'error' }))
+      }
+    })
+
+    test('follow redirects when followRedirects is true', async () => {
+      mockedFetch.mockImplementation(async () => Promise.resolve(new Response(JSON.stringify({ value: 7 }), { status: 200 })))
+      await fetchClient.get('any url', { followRedirects: true })
+      expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ redirect: 'follow' }))
+      await fetchClient.post('any url', { value: 1 }, { followRedirects: true })
+      expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ method: 'POST', redirect: 'follow' }))
+    })
+
+    test('propagate the fetch error when a redirect is rejected', async () => {
+      mockedFetch.mockRejectedValueOnce(new TypeError('fetch failed'))
+      await expect(fetchClient.get('any url')).rejects.toThrow('fetch failed')
+    })
+
+    test('reject a 3xx response instead of parsing it as success', async () => {
+      mockedFetch.mockImplementation(async () => Promise.resolve(new Response('', {
+        status: 302,
+        headers: { Location: 'http://127.0.0.1/secret' }
+      })))
+      await expect(fetchClient.get('https://lps.example.com')).rejects.toThrow('HTTP redirects are not allowed')
+      await expect(fetchClient.post('https://lps.example.com', { value: 1 })).rejects.toThrow('HTTP redirects are not allowed')
+    })
   })
 })

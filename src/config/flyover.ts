@@ -16,4 +16,9 @@ export interface FlyoverConfig extends BridgesConfig {
    * @default false
    */
   disableChecksum?: boolean
+  /**
+   * Whether HTTP requests to the Liquidity Provider Server may follow redirects
+   * @default false
+   */
+  followRedirects?: boolean
 }

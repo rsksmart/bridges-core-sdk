@@ -3,6 +3,8 @@ export interface HttpClientOptions {
   includeCaptcha: boolean
   maxResponseBytes?: number
   maxResponseTimeMs?: number
+  /** When true, redirects are followed; otherwise a redirect makes the request fail. Defaults to false. */
+  followRedirects?: boolean
 }
 export interface HttpClient {
   get: <T>(url: string, options?: Partial<HttpClientOptions>) => Promise<T>

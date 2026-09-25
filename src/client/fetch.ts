@@ -5,6 +5,7 @@ const serializer = JSONbig({ useNativeBigInt: true })
 
 export const DEFAULT_MAX_RESPONSE_BYTES = 256 * 1024
 export const DEFAULT_MAX_RESPONSE_TIME_MS = 60_000
+const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308])
 
 export function getHttpClient (resolveCaptchaToken: CaptchaTokenResolver): HttpClient {
   return {
@@ -49,7 +50,15 @@ async function request<T> (
   }, maxTimeMs)
 
   try {
-    const response = await fetch(url, { ...init, signal: abortController.signal })
+    const requestInit: RequestInit = {
+      ...init,
+      redirect: options?.followRedirects === true ? 'follow' : 'error',
+      signal: abortController.signal
+    }
+    const response = await fetch(url, requestInit)
+    if (options?.followRedirects !== true && REDIRECT_STATUSES.has(response.status)) {
+      throw new Error('HTTP redirects are not allowed')
+    }
     return await handleResponse<T>(response, maxBytes, abortController)
   } catch (error) {
     if (abortController.signal.aborted && timedOut) {
