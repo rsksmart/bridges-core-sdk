@@ -17,7 +17,10 @@ export interface FlyoverConfig extends BridgesConfig {
    */
   disableChecksum?: boolean
   /**
-   * Whether HTTP requests to the Liquidity Provider Server may follow redirects
+   * Whether HTTP requests to the Liquidity Provider Server may follow redirects.
+   *
+   * IMPORTANT: redirect targets bypass the SDK's URL validation and request data may be forwarded to them.
+   * Only intended for local development, never in production.
    * @default false
    */
   followRedirects?: boolean

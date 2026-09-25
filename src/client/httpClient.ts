@@ -3,7 +3,12 @@ export interface HttpClientOptions {
   includeCaptcha: boolean
   maxResponseBytes?: number
   maxResponseTimeMs?: number
-  /** When true, redirects are followed; otherwise a redirect makes the request fail. Defaults to false. */
+  /**
+   * When true, redirects are followed; otherwise a redirect makes the request fail. Defaults to false.
+   *
+   * IMPORTANT: redirect targets are not validated and request data may be forwarded to them.
+   * Only enable it for trusted servers, never in production.
+   */
   followRedirects?: boolean
 }
 export interface HttpClient {
