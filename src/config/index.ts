@@ -7,7 +7,8 @@ export interface BridgesConfig {
   /** Is the name of the network that the client will be using */
   network: Network
   /**
-     * If true http connections will be allowed, otherwise client will throw an error if the connection is not secured
+     * If true, plain HTTP and loopback, private or link-local provider hosts are allowed.
+     * Otherwise the client rejects non-https URLs and non-public destinations.
      * @default false
      */
   allowInsecureConnections?: boolean
