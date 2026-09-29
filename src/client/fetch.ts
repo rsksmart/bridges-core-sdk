@@ -52,11 +52,11 @@ async function request<T> (
   try {
     const requestInit: RequestInit = {
       ...init,
-      redirect: options?.followRedirects === true ? 'follow' : 'error',
+      redirect: 'error',
       signal: abortController.signal
     }
     const response = await fetch(url, requestInit)
-    if (options?.followRedirects !== true && REDIRECT_STATUSES.has(response.status)) {
+    if (REDIRECT_STATUSES.has(response.status)) {
       throw new Error('HTTP redirects are not allowed')
     }
     return await handleResponse<T>(response, maxBytes, abortController)
