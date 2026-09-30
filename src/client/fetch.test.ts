@@ -302,22 +302,12 @@ describe('Fetch client implementation should', () => {
       await fetchClient.get('any url')
     })
 
-    test('reject redirects on GET and POST by default', async () => {
+    test('reject redirects on GET and POST', async () => {
       mockedFetch.mockImplementation(async () => Promise.resolve(new Response(JSON.stringify({ value: 7 }), { status: 200 })))
-      for (const options of [undefined, {}, { followRedirects: false }]) {
-        await fetchClient.get('any url', options)
-        expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ redirect: 'error' }))
-        await fetchClient.post('any url', { value: 1 }, options)
-        expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ method: 'POST', redirect: 'error' }))
-      }
-    })
-
-    test('follow redirects when followRedirects is true', async () => {
-      mockedFetch.mockImplementation(async () => Promise.resolve(new Response(JSON.stringify({ value: 7 }), { status: 200 })))
-      await fetchClient.get('any url', { followRedirects: true })
-      expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ redirect: 'follow' }))
-      await fetchClient.post('any url', { value: 1 }, { followRedirects: true })
-      expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ method: 'POST', redirect: 'follow' }))
+      await fetchClient.get('any url')
+      expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ redirect: 'error' }))
+      await fetchClient.post('any url', { value: 1 })
+      expect(mockedFetch).toHaveBeenLastCalledWith('any url', expect.objectContaining({ method: 'POST', redirect: 'error' }))
     })
 
     test('propagate the fetch error when a redirect is rejected', async () => {
