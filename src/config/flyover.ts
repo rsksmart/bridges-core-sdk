@@ -5,6 +5,12 @@ import { type CaptchaTokenResolver } from '../client'
 export interface FlyoverConfig extends BridgesConfig {
   /** Is a custom url for users that want to use other LBC, for example, a local one for testing purposes */
   customLbcAddress?: string
+  /** Is a custom address of the FlyoverConfigurations contract, for networks without a default one or for local testing */
+  customFlyoverConfigurationsAddress?: string
+  /** Is a custom address of the PegOutEscrow contract, for networks without a default one or for local testing */
+  customPegOutEscrowAddress?: string
+  /** Is a custom address of the PegOutContract, for networks whose deployment differs from the default one or for local testing */
+  customPegOutContractAddress?: string
   /** @deprecated Will be removed in future releases */
   customRegtestUrl?: string
   /**
